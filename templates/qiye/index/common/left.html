@@ -1,0 +1,43 @@
+<!-- 公告 -->
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="title">公告</span>
+    </div>
+    <div class="list-group">
+        {php}
+            $data = \app\content\model\Content::where(['status'=>1,'channel_id'=>'8']) -> limit(4) -> order('sort desc,id desc') -> select();
+        {/php}
+        {foreach name="data" item="vo" }
+            <a href="{$vo.url}" class="list-group-item"> <strong>◀):</strong>&nbsp;&nbsp;{$vo.shorttitle}</a>
+        {/foreach}
+    </div>
+</div>
+<!-- 推荐文章 -->
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="title">推荐</span>
+    </div>
+    <div class="list-group">
+        {php}
+            $data = new \app\content\model\Content();
+            $data = $data -> attrlist('推荐',4);
+        {/php}
+        {foreach name="data" item="vo" }
+            <a href="{$vo.url}" class="list-group-item">{$vo.title|mb_substr=0,16}</a>
+        {/foreach}
+    </div>
+</div>
+<!-- 联系方式 -->
+{php}
+    $lxwm = \app\content\model\Channel::where(['status'=>1,'name'=>'contactus']) -> find();
+{/php}
+{if condition="$lxwm"}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="title">{$lxwm.title}</span>
+    </div>
+    <div class="panel-body">
+        {$lxwm.ext.field1|htmlspecialchars_decode|default="自定义数据field1未定义"}
+    </div>
+</div>
+{/if}

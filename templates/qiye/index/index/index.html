@@ -1,0 +1,55 @@
+{include file='common/header'/}
+<div class="row">
+    <div class="col-md-3">
+        {include file='index@common/left'/}
+    </div>
+    <div class="col-md-9">
+        {php}
+            $data = \app\content\model\Channel::where(['status'=>1,'name'=>'company']) -> find();
+        {/php}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <span class="title">{$data.title}</span>
+            </div>
+            <div class="panel-body">
+                <div style="float:left;margin:0 15px 15px 0;"><img src="{$data.ext.logo|default=''|thumb}" style="max-width:160px;" alt=""></div>
+                {$data.body|htmlspecialchars_decode}
+            </div>
+        </div>
+        <div class="row">
+            {php}
+                $content = new \app\content\model\Content();
+                $data = $content -> attrlist('推荐产品',4);
+            {/php}
+            {foreach name='data' item='vo'}
+            <div class="col-xs-6 col-md-3">
+                <a href="{$vo.url}" class="thumbnail">
+                    <img src="{$vo.thumb|thumb}" alt="{$vo.title}">
+                    <hr style="margin:15px 0;">
+                    <h4 class="text-center" style=""><strong>{$vo.title}</strong></h4>
+                </a>
+            </div>
+            {/foreach}
+        </div>
+    </div>
+</div>
+{if condition="check_app('link')"}
+    <div class="row">
+        <div class="col-md-12">
+            <!-- 友情链接 -->
+            <div class="panel panel-default">
+                <div class="panel-heading"><a href="{:url('link/index/index')}" class="pull-right">申请</a>友情链接</div>
+                <div class="panel-body">
+                    {php}
+                        $data = \app\link\model\Link::where(['status'=>1]) -> order('sort desc') -> limit(20) -> select();
+                    {/php}
+                    {foreach name="data" item="vo" }
+                        <a href="{$vo.url}" target='_blank'>{$vo.title}</a>
+                    {/foreach}
+                    <a href="http://www.ebcms.com" target='_blank'>CMS</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{/if}
+{include file='common/footer'/}

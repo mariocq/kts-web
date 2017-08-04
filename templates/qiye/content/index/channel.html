@@ -1,0 +1,44 @@
+{include file='index@common/header' /}
+<div class="row">
+    <div class="col-md-3">
+        {include file='common/left' /}
+    </div>
+    <div class="col-md-9">
+        {notempty name='channel.sub_ids'}
+            <div class="row">
+                {php}
+                    $data = \app\content\model\Channel::where(['pid'=>$channel['id'],'status'=>1,'type'=>'channel']) -> order('sort desc,id asc') -> select();
+                {/php}
+                {foreach name='data' item='vo'}
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><a href="{$vo.url}">{$vo.title}</a></div>
+                            <div class="list-group">
+                            {php}
+                                $lists = $vo -> lists() -> order('sort desc,id desc') -> limit(5) -> select();
+                            {/php}
+                            {foreach name='lists' item='vs'}
+                                <a href="{$vs.url}" class="list-group-item" style="{$vs.style}"> <strong>{$key+1}</strong>. {$vs.shorttitle|mb_substr=0,24}</a>
+                            {/foreach}
+                            </div>
+                        </div>
+                    </div>
+                {/foreach}
+            </div>
+        {else/}
+            {php}
+                $lists = \app\content\model\Content::where(['channel_id' => $channel['id'], 'status' => 1]) -> order('sort desc, id desc') -> paginate(5);
+            {/php}
+            <div class="panel panel-default">
+                <div class="panel-heading"><a href="{$channel.url}">{$channel.title}</a></div>
+                <div class="list-group">
+                {foreach name='lists' item='vs'}
+                    <a href="{$vs.url}" class="list-group-item" style="{$vs.style}"> <strong>{$key+1}</strong>. {$vs.shorttitle|mb_substr=0,24}</a>
+                {/foreach}
+                </div>
+            </div>
+            {$lists -> render()}
+        {/notempty}
+    </div>
+</div>
+{include file='index@common/footer' /}

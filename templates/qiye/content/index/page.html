@@ -1,0 +1,16 @@
+{include file='index@common/header' /}
+<div class="row">
+    <div class="col-md-3">
+        {include file='common/left' /}
+    </div>
+    <div class="col-md-9">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <h1>{$channel.title}</h1>
+                <hr>
+                {$channel.body|htmlspecialchars_decode}
+            </div>
+        </div>
+    </div>
+</div>
+{include file='index@common/footer' /}
