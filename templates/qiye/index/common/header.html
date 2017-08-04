@@ -4,9 +4,9 @@
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
-    <title>{$seo.title|default='易贝云系统'}</title>
-    <meta name="keywords" content="{$seo.keywords|default='ebcms,易贝cms,内容管理系统'}">
-    <meta name="description" content="{$seo.description|default='易贝云系统是一款开源的php内容管理系统'}">
+    <title>{$seo.title|default=''}</title>
+    <meta name="keywords" content="{$seo.keywords|default=''}">
+    <meta name="description" content="{$seo.description|default=''}">
     <!-- Bootstrap -->
     <link href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <!--[if lt IE 9]>
@@ -62,13 +62,6 @@
                 <div style="padding:10px;width: 250px;">
                     <img src="__ROOT__/system/image/logo.png">
                 </div>
-            </div>
-            <div class="col-md-8 hidden-xs">
-                {if condition="check_app('mbzs')"}
-                <div style="padding:10px 0;" class="pull-right">
-                    <img src="{:\\app\\mbzs\\Zs::get('header_banner','头部banner')}" height="70" alt="">
-                </div>
-                {/if}
             </div>
         </div>
         <div class="row">
