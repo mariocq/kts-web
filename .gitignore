@@ -1,9 +1,2 @@
 /runtime
-/1
 /thinkphp
-/application/
-!/application/ebcms
-/application/install
-/application/index
-/application/.htaccess
-/application/common.php

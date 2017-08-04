@@ -1,0 +1,148 @@
+{include file='ebcms@common/header' /}
+{php}
+	$where = [];
+	if(input('q')){
+		$where['nickname|contact|content|reply'] = ['like','%'.trim(input('q')).'%'];
+	}
+	if(input('?status') && input('status')!=''){
+		$where['status'] = input('status');
+	}
+	if(input('?reply') && input('reply')!=''){
+		$where['reply'] = [input('reply')?'neq':'eq',''];
+	}
+	if(input('?recommend') && input('recommend')!=''){
+		$where['recommend'] = [input('recommend')?'neq':'eq',''];
+	}
+	$data = \app\guestbook\model\Guestbook::where($where) -> order('id desc') -> paginate(10,false,['query'=>input('get.')]);
+{/php}
+<div class="col-md-12">
+	<h3>
+		<span>留言管理</span>
+	</h3>
+	<p>
+		<form class="form-inline" role="form" action="{:url('index')}" method="GET">
+			<div class="form-group">
+				<select class="form-control" name="status">
+					<option value="">不限</option>
+					<option value="1" {eq name='Request.get.status' value='1'}selected{/eq}>显示</option>
+					<option value="0" {eq name='Request.get.status' value='0'}selected{/eq}>隐藏</option>
+					<option value="99" {eq name='Request.get.status' value='99'}selected{/eq}>待审</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<select class="form-control" name="reply">
+					<option value="">不限</option>
+					<option value="1" {eq name='Request.param.reply' value='1'}selected{/eq}>已回复</option>
+					<option value="0" {eq name='Request.param.reply' value='0'}selected{/eq}>未回复</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<select class="form-control" name="recommend">
+					<option value="">不限</option>
+					<option value="1" {eq name='Request.param.recommend' value='1'}selected{/eq}>已推荐</option>
+					<option value="0" {eq name='Request.param.recommend' value='0'}selected{/eq}>未推荐</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<input type="text" name="q" value="{:trim(input('q'))}" class="form-control" id="q" placeholder="关键字">
+			</div>
+			<button type="submit" class="btn btn-danger">搜索</button>
+		</form>
+	</p>
+	<div class="table-responsive">
+		<table class="table table-bordered table-hover table-ebcms">
+			<tbody>
+				<tr>
+					<th style="width:70px;">id</th>
+					<th>内容</th>
+				</tr>
+				{foreach name='data' item='vo'}
+					<tr>
+						<td>
+							<label>
+								<input type="checkbox" class="ebcms-id" name="id" value="{$vo.id}">
+								{$vo.id}
+							</label>
+						</td>
+						<td>
+							<div class="media">
+								<div class="media-left">
+									<div style="width:60px;">
+										<img src="__ROOT__/system/image/avatar.gif" alt="">
+										<h5 class="text-center"><span class="label label-danger">{$vo.nickname}</span></h5>
+									</div>
+								</div>
+								<div class="media-body">
+									<div class="alert alert-info">
+										<p>{$vo.content}</p>
+										<hr style="margin: 10px 0;">
+										<p>联系方式：{$vo.contact} 留言时间：{$vo.create_time | date='Y-m-d H:i:s',###} IP：{$vo.ip}</p>
+									</div>
+									<div>
+										{if condition="check_auth('status')"}
+										{switch name="vo.status" }
+										    {case value="99"}
+										        <button type="button" class="btn btn-danger btn-sm ebcms-do" url="{:url('status')}" data-ids='{$vo.id}' data-value='1'>显示</button>
+										        <button type="button" class="btn btn-danger btn-sm ebcms-do" url="{:url('status')}" data-ids='{$vo.id}' data-value='0'>隐藏</button>
+										    {/case}
+										    {case value="1"}
+										        <button type="button" class="btn btn-primary btn-sm ebcms-do" url="{:url('status')}" data-ids='{$vo.id}' data-value='0'>显示</button>
+										    {/case}
+										    {default /}
+										        <button type="button" class="btn btn-warning btn-sm ebcms-do" url="{:url('status')}" data-ids='{$vo.id}' data-value='1'>隐藏</button>
+										{/switch}
+										{/if}
+										{if condition="check_auth('edit')"}
+										<a class="btn btn-sm btn-primary" href="{:url('edit?id='.$vo['id'])}">编辑</a>
+										{/if}
+										{if condition="check_auth('recommend')"}
+											{eq name='vo.recommend' value='1'}
+												<button type="button" class="btn btn-danger btn-sm ebcms-do" url="{:url('recommend')}" data-ids='{$vo.id}' data-value="0"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+											{else/}
+												<button type="button" class="btn btn-primary btn-sm ebcms-do" url="{:url('recommend')}" data-ids='{$vo.id}' data-value="1"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+											{/eq}
+										{/if}
+										{if condition="check_auth('delete')"}
+											<button type="button" class="btn btn-primary btn-sm ebcms-do" url="{:url('delete')}" data-ids='{$vo.id}' confirm="删除后不可恢复，确定删除？"><span class="glyphicon glyphicon-remove"></span></button>
+										{/if}
+										{if condition="check_auth('reply')"}
+										<a href="{:url('reply?id='.$vo['id'])}" class="btn btn-sm btn-primary">回复</a>
+										{/if}
+									</div>
+									{if condition="$vo['reply']"}
+									<div class="media">
+										<div class="media-body">
+											<div class="alert alert-danger">
+												<p>{$vo.reply}</p>
+												<hr style="margin: 10px 0;">
+												<p>回复时间：{$vo.update_time | date='Y-m-d H:i:s',###}</p>
+											</div>
+										</div>
+										<div class="media-right">
+											<div style="width:60px;">
+												<img src="__ROOT__/system/image/sign.png" alt="">
+											</div>
+										</div>
+									</div>
+									{/if}
+								</div>
+							</div>
+						</td>
+					</tr>
+				{/foreach}
+			</tbody>
+			<tfoot>
+				<tr>
+					<td style="cursor: pointer;" onclick="$('input.ebcms-id').trigger('click');">
+						<span class="glyphicon glyphicon-check"></span> 选择
+					</td>
+					<td>
+						<button onclick="$(this).data('ids',EBCMS.FN.getCheckedId('input.ebcms-id:checkbox:checked'));" type="button" class="btn btn-danger btn-sm ebcms-do" url="{:url('delete')}" confirm="批量删除选中项吗？">删除</button>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	{$data -> render()}
+</div>
+{include file='ebcms@common/footer' /}
